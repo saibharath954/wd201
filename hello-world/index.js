@@ -1,4 +1,4 @@
-const hello = () => {
-    console.log("Hello GitHub");
-};
-hello();
+const returnMessage = () => {
+    console.log("Hello GitHub!");
+}
+returnMessage();
