@@ -9,18 +9,12 @@ export default [
       globals: { ...globals.browser, ...globals.node },
       ecmaVersion: "latest",
     },
-    env: {
-      commonjs: true,
-      es2021: true,
-      node: true,
-      jest: true,
-    },
-    extends: ["eslint:recommended", pluginJs.configs.recommended],
+    // Apply recommended configuration directly here
+    ...pluginJs.configs.recommended,
     rules: {
-      // Place any custom rules here
+      semi: ["error", "always"],
+      "no-unused-vars": "warn",
+      "no-console": "off",
     },
-    overrides: [
-      // Define any specific overrides for certain files or directories here
-    ],
   },
 ];
