@@ -11,7 +11,7 @@ app.use(express.static(path.join(__dirname,'public')));
 
 app.set("view engine", "ejs");
 
-app.get("/", async (request, response) => {
+app.get("https://bharath-todo-app.onrender.com", async (request, response) => {
   const allTodos = await Todo.getTodos();
   if(request.accepts("html")) {
     response.render('index',{
@@ -24,7 +24,7 @@ app.get("/", async (request, response) => {
   }
 });
 
-app.get("/todos", async function (_request, response) {
+app.get("https://bharath-todo-app.onrender.com/todos", async function (_request, response) {
   console.log("Processing list of all Todos ...");
   // FILL IN YOUR CODE HERE
 
@@ -40,7 +40,7 @@ app.get("/todos", async function (_request, response) {
   }
 });
 
-app.get("/todos/:id", async (request, response) => {
+app.get("https://bharath-todo-app.onrender.com/todos/:id", async (request, response) => {
   try {
     const todo = await Todo.findByPk(request.params.id);
     return response.json(todo);
@@ -50,7 +50,7 @@ app.get("/todos/:id", async (request, response) => {
   }
 });
 
-app.post("/todos", async (request, response) => {
+app.post("https://bharath-todo-app.onrender.com/todos", async (request, response) => {
   console.log("Creating a Todo", request.body);
   try {
     const todo = await Todo.addTodo(request.body);
@@ -61,7 +61,7 @@ app.post("/todos", async (request, response) => {
   }
 });
 
-app.put("/todos/:id/markAsCompleted", async (request, response) => {
+app.put("https://bharath-todo-app.onrender.com/todos/:id/markAsCompleted", async (request, response) => {
   console.log("Updating a Todo with ID: ",request.params.id);
   const todo = await Todo.findByPk(request.params.id);
   try {
@@ -73,7 +73,7 @@ app.put("/todos/:id/markAsCompleted", async (request, response) => {
   }
 });
 
-app.delete("/todos/:id", async (request, response) => {
+app.delete("https://bharath-todo-app.onrender.com/todos/:id", async (request, response) => {
   console.log("Deleting a Todo with ID: ",request.params.id);
   // FILL IN YOUR CODE HERE
 
@@ -89,5 +89,19 @@ app.delete("/todos/:id", async (request, response) => {
     return response.status(422).json(error);
   }
 });
+
+app.get("/", async (request, response) => {
+  const allTodos = await Todo.getTodos();
+  if(request.accepts("html")) {
+    response.render('index',{
+      allTodos
+    });
+  } else {
+    response.json({
+      allTodos
+    })
+  }
+});
+
 
 module.exports = app;
