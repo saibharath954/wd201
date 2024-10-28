@@ -26,6 +26,18 @@ module.exports = (sequelize, DataTypes) => {
       return this.findAll();
     }
 
+    isOverdue() {
+      return this.dueDate < new Date().toISOString().split('T',1)[0];
+    }
+
+    isDueToday() {
+      return this.dueDate == new Date().toISOString().split('T',1)[0];
+    }
+
+    isDueLater() {
+      return this.dueDate > new Date().toISOString().split('T',1)[0];
+    }
+
   }
   Todo.init({
     title: DataTypes.STRING,

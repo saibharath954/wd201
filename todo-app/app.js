@@ -11,20 +11,27 @@ app.use(express.static(path.join(__dirname,'public')));
 
 app.set("view engine", "ejs");
 
-app.get("https://bharath-todo-app.onrender.com", async (request, response) => {
-  const allTodos = await Todo.getTodos();
+app.get("https://bharath-todo-app.onrender.com/", async (request, response) => {
+  const todos = await Todo.findAll();
+  const overdue = todos.filter(todo => todo.isOverdue());
+  const dueToday = todos.filter(todo => todo.isDueToday());
+  const dueLater = todos.filter(todo => todo.isDueLater());
   if(request.accepts("html")) {
     response.render('index',{
-      allTodos
+      overdue: overdue,
+      dueToday: dueToday,
+      dueLater: dueLater
     });
   } else {
     response.json({
-      allTodos
+      overdue: overdue,
+      dueToday: dueToday,
+      dueLater: dueLater
     })
   }
 });
 
-app.get("https://bharath-todo-app.onrender.com/todos", async function (_request, response) {
+app.get("/todos", async function (_request, response) {
   console.log("Processing list of all Todos ...");
   // FILL IN YOUR CODE HERE
 
@@ -40,7 +47,7 @@ app.get("https://bharath-todo-app.onrender.com/todos", async function (_request,
   }
 });
 
-app.get("https://bharath-todo-app.onrender.com/todos/:id", async (request, response) => {
+app.get("/todos/:id", async (request, response) => {
   try {
     const todo = await Todo.findByPk(request.params.id);
     return response.json(todo);
@@ -50,7 +57,7 @@ app.get("https://bharath-todo-app.onrender.com/todos/:id", async (request, respo
   }
 });
 
-app.post("https://bharath-todo-app.onrender.com/todos", async (request, response) => {
+app.post("/todos", async (request, response) => {
   console.log("Creating a Todo", request.body);
   try {
     const todo = await Todo.addTodo(request.body);
@@ -61,7 +68,7 @@ app.post("https://bharath-todo-app.onrender.com/todos", async (request, response
   }
 });
 
-app.put("https://bharath-todo-app.onrender.com/todos/:id/markAsCompleted", async (request, response) => {
+app.put("/todos/:id/markAsCompleted", async (request, response) => {
   console.log("Updating a Todo with ID: ",request.params.id);
   const todo = await Todo.findByPk(request.params.id);
   try {
@@ -73,7 +80,7 @@ app.put("https://bharath-todo-app.onrender.com/todos/:id/markAsCompleted", async
   }
 });
 
-app.delete("https://bharath-todo-app.onrender.com/todos/:id", async (request, response) => {
+app.delete("/todos/:id", async (request, response) => {
   console.log("Deleting a Todo with ID: ",request.params.id);
   // FILL IN YOUR CODE HERE
 
@@ -91,14 +98,21 @@ app.delete("https://bharath-todo-app.onrender.com/todos/:id", async (request, re
 });
 
 app.get("/", async (request, response) => {
-  const allTodos = await Todo.getTodos();
+  const todos = await Todo.findAll();
+  const overdue = todos.filter(todo => todo.isOverdue());
+  const dueToday = todos.filter(todo => todo.isDueToday());
+  const dueLater = todos.filter(todo => todo.isDueLater());
   if(request.accepts("html")) {
     response.render('index',{
-      allTodos
+      overdue: overdue,
+      dueToday: dueToday,
+      dueLater: dueLater
     });
   } else {
     response.json({
-      allTodos
+      overdue: overdue,
+      dueToday: dueToday,
+      dueLater: dueLater
     })
   }
 });

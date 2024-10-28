@@ -5,11 +5,33 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./css/style.css" rel="stylesheet">
-    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Todo Manager</title>
 </head>
 <body>
     <%- include('header.ejs') %>
-    <%- include('todos.ejs') %>
-    <%- include('footer.ejs') %>
+    <div class="grid grid-cols-6">
+        <div class ="col-start-3 col-span-2 py-5">
+            <form>
+                <div class="flex gap-2">
+                    <div class="flex-auto">
+                        <input type="text" placeholder="What's next?" required class="border border-gray-300 rounded text-gray-900 w-full p-2 text-2xl" />
+                    </div>
+                    <div class="flex-auto">
+                        <input type="date" class="border border-gray-300 rounded text-gray-900 w-full p-2 text-2xl leading-7" />
+                    </div>
+                    <div class="flex-none">
+                        <button type="submit" class="bg-green-600 text-white px-7 py-2 rounded font-medium py-3" >Add</button>
+                    </div>
+                </div>
+            </form>
+            <div class="py-8">
+                <div class="py-4"><%- include('todos.ejs', { "title":"Overdue" , "data": overdue }) %></div>
+                <div class="py-4"><%- include('todos.ejs', { "title":"Due Today" , "data": dueToday }) %></div>
+                <div class="py-4"><%- include('todos.ejs', { "title":"Due Later" , "data": dueLater }) %></div>
+            </div>
+        </div>
+    </div>
+    <!--<%- include('footer.ejs') %>-->
 </body>
 </html>
