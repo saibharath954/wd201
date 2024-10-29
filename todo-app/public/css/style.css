@@ -3,5 +3,5 @@ h3{
 }
 
 .Todo-items:hover .trash-icon {
-    display: block;
+    display: inline;
 }

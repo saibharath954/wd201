@@ -1,26 +1,32 @@
 const express = require("express");
 const app = express();
 const { Todo } = require("./models");
+var csurf = require("tiny-csrf");
+var cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser("shh! some secret string"));
+app.use(csurf("this_should_be_32_character_long",["POST","PUT","DELETE"]));
 
 const path = require("path");
 app.use(express.static(path.join(__dirname,'public')));
 
-// Set EJS as view engine
-
 app.set("view engine", "ejs");
 
-app.get("https://bharath-todo-app.onrender.com/", async (request, response) => {
+app.get("/", async (request, response) => {
   const todos = await Todo.findAll();
   const overdue = todos.filter(todo => todo.isOverdue());
   const dueToday = todos.filter(todo => todo.isDueToday());
   const dueLater = todos.filter(todo => todo.isDueLater());
+  const completedItems = todos.filter(todo => todo.isCompleted());
   if(request.accepts("html")) {
     response.render('index',{
       overdue: overdue,
       dueToday: dueToday,
-      dueLater: dueLater
+      dueLater: dueLater,
+      completedItems: completedItems,
+      csrfToken: request.csrfToken(),
     });
   } else {
     response.json({
@@ -33,11 +39,6 @@ app.get("https://bharath-todo-app.onrender.com/", async (request, response) => {
 
 app.get("/todos", async function (_request, response) {
   console.log("Processing list of all Todos ...");
-  // FILL IN YOUR CODE HERE
-
-  // First, we have to query our PostgerSQL database using Sequelize to get list of all Todos.
-  // Then, we have to respond with all Todos, like:
-  // response.send(todos)
   try {
     const todos = await Todo.findAll();
     return response.json(todos);
@@ -60,20 +61,26 @@ app.get("/todos/:id", async (request, response) => {
 app.post("/todos", async (request, response) => {
   console.log("Creating a Todo", request.body);
   try {
-    const todo = await Todo.addTodo(request.body);
-    return response.json(todo);
+    await Todo.addTodo(request.body);
+    return response.redirect("/");
   } catch (error) {
     console.log(error);
     return response.status(422).json(error);
   }
 });
 
-app.put("/todos/:id/markAsCompleted", async (request, response) => {
+app.put("/todos/:id", async (request, response) => {
   console.log("Updating a Todo with ID: ",request.params.id);
-  const todo = await Todo.findByPk(request.params.id);
   try {
-    const updatedTodo = await todo.markAsCompleted();
-    return response.json(updatedTodo);
+    const { completed } = request.body;
+    const todo = await Todo.findByPk(request.params.id);
+
+    if (todo) {
+      await todo.setCompletionStatus(completed);
+      return response.json(todo);
+    } else {
+      return response.status(404).json({ error: "Todo not found" });
+    }
   } catch (error) {
     console.log(error);
     return response.status(422).json(error);
@@ -82,40 +89,13 @@ app.put("/todos/:id/markAsCompleted", async (request, response) => {
 
 app.delete("/todos/:id", async (request, response) => {
   console.log("Deleting a Todo with ID: ",request.params.id);
-  // FILL IN YOUR CODE HERE
-
-  // First, we have to query our database to delete a Todo by ID.
-  // Then, we have to respond back with true/false based on whether the Todo was deleted or not.
-  // response.send(true)
   try {
-    const deleted = await Todo.destroy({ where: { id: request.params.id } });
-    // If a record was deleted, `deleted` will be 1; otherwise, it will be 0.
+    const deleted = await Todo.remove(request.params.id);
     return response.json(deleted ? true : false);
   } catch (error) {
     console.log(error);
     return response.status(422).json(error);
   }
 });
-
-app.get("/", async (request, response) => {
-  const todos = await Todo.findAll();
-  const overdue = todos.filter(todo => todo.isOverdue());
-  const dueToday = todos.filter(todo => todo.isDueToday());
-  const dueLater = todos.filter(todo => todo.isDueLater());
-  if(request.accepts("html")) {
-    response.render('index',{
-      overdue: overdue,
-      dueToday: dueToday,
-      dueLater: dueLater
-    });
-  } else {
-    response.json({
-      overdue: overdue,
-      dueToday: dueToday,
-      dueLater: dueLater
-    })
-  }
-});
-
 
 module.exports = app;

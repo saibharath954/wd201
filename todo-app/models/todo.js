@@ -15,11 +15,15 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     static addTodo({title, dueDate}) {
-      return this.create({title: title, dueDate: dueDate, completed: false})
+      return this.create({title: title, dueDate: dueDate, completed: false});
     }
 
-    markAsCompleted() {
-      return this.update({completed: true})
+    setCompletionStatus( status ) {
+      return this.update({completed: status});
+    }
+
+    markAsIncomplete() {
+      return this.update({completed: false});
     }
 
     static getTodos() {
@@ -27,15 +31,30 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     isOverdue() {
-      return this.dueDate < new Date().toISOString().split('T',1)[0];
+      return (this.dueDate < new Date().toISOString().split('T',1)[0] && 
+        this.completed === false);
     }
 
     isDueToday() {
-      return this.dueDate == new Date().toISOString().split('T',1)[0];
+      return (this.dueDate == new Date().toISOString().split('T',1)[0] &&
+        this.completed === false);
     }
 
     isDueLater() {
-      return this.dueDate > new Date().toISOString().split('T',1)[0];
+      return (this.dueDate > new Date().toISOString().split('T',1)[0] &&
+        this.completed === false);
+    }
+
+    isCompleted() {
+      return this.completed === true;
+    }
+
+    static async remove(id) {
+      return this.destroy({
+        where: {
+          id,
+        },
+      });
     }
 
   }
