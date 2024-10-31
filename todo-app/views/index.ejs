@@ -4,85 +4,45 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="<%= csrfToken %>" />
+    <meta name="csrf-token" content="<%= csrfToken %>">
     <link href="./css/style.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Todo Manager</title>
-    <script>
-        var token = document
-            .querySelector('meta[name="csrf-token"]')
-            .getAttribute("content");
-        function updateTodo(id, status) {
-            fetch(`/todos/${id}`, {
-                method: "put",
-                headers: { 
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    completed: status,
-                    "_csrf": token
-                })
-            })
-                .then((res) => {
-                    if (res.ok) {
-                      window.location.reload();  
-                    }
-                })
-                .catch((err) => console.error(err));
-        }
-        function deleteTodo(id) {
-            fetch(`/todos/${id}`, {
-                method: "delete",
-                headers: { 
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    "_csrf": token
-                })
-            })
-                .then((res) => {
-                    if (res.ok) {
-                      window.location.reload();  
-                    }
-                })
-                .catch((err) => console.error(err));
-        }
-        // document.getElementById("todoForm").addEventListener("submit", function(event) {
-        //     const title = document.getElementById("title").value.trim();
-        //     const dueDate = document.getElementById("dueDate").value;
-        //     if(!title || !dueDate) {
-        //         event.preventDefault();
-        //         alert("Both todo and due date are required.");
-        //     }
-        // });
-    </script>
+    <title>Task Manager</title>
 </head>
-<body>
-    <%- include('header.ejs') %>
-    <div class="grid grid-cols-6">
-        <div class ="col-start-3 col-span-2 py-5">
-            <form id="todoForm" action="/todos" method="post">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                <div class="flex gap-2">
-                    <div class="flex-auto">
-                        <input type="text" name="title" id="title" placeholder="What's next?" required class="border border-gray-300 rounded text-gray-900 w-full p-2 text-2xl" />
+<body class="bg-gray-100">
+    <div class="relative flex flex-col justify-center py-7">
+        <div class ="mx-auto py-7 space-y-2 w-96">
+            <div class="border-4 rounded p-7 bg-white ">
+                <h1 class="text-2xl font-bold text-gray-600 text-center py-8">Task Manager</h1>
+                <form id="todoForm" action="/signup" class="py-5">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                    <div class="flex gap-2">
+                        <div class="flex-none w-1/3">
+                            <input type="text" name="title" id="title" placeholder="What's next?" class="border border-gray-300 rounded text-gray-900 w-full p-2 text-2xl" />
+                        </div>
+                        <div class="flex-none w-1/3">
+                            <input type="date" name="dueDate" id="dueDate" class="border border-gray-300 rounded text-gray-900 w-full p-2 text-2xl leading-7" />
+                        </div>
+                        <div class="flex-none">
+                            <button type="submit" class="bg-green-600 text-white px-7 py-2 rounded font-medium py-3" >Add</button>
+                        </div>
                     </div>
-                    <div class="flex-auto">
-                        <input type="date" name="dueDate" id="dueDate" required class="border border-gray-300 rounded text-gray-900 w-full p-2 text-2xl leading-7" />
-                    </div>
-                    <div class="flex-none">
-                        <button type="submit" class="bg-green-600 text-white px-7 py-2 rounded font-medium py-3" >Add</button>
-                    </div>
-                </div>
-            </form>
-            <div class="py-8">
-                <div class="py-4"><%- include('todos.ejs', { "title":"Overdue" , "data": overdue }) %></div>
-                <div class="py-4"><%- include('todos.ejs', { "title":"Due Today" , "data": dueToday }) %></div>
-                <div class="py-4"><%- include('todos.ejs', { "title":"Due Later" , "data": dueLater }) %></div>
-                <div class="py-4"><%- include('todos.ejs', { "title":"Completed Items" , "data": completedItems }) %></div>
+                </form>
+                <h5 class="text-lg font-bold text-gray-600 py-4">Overdue<span class="mx-2 px-1 bg-gray-300 text-gray-700 rounded">0</span></h5>
+                <h5 class="text-lg font-bold text-gray-600 py-4">Due Today<span class="mx-2 px-1 bg-gray-300 text-gray-700 rounded">0</span></h5>
+                <h5 class="text-lg font-bold text-gray-600 py-4">Due Later<span class="mx-2 px-1 bg-gray-300 text-gray-700 rounded">0</span></h5>
+                <h5 class="text-lg font-bold text-gray-600 py-5">Completed Items<span class="mx-2 px-1 bg-gray-300 text-gray-700 rounded">0</span></h5>
             </div>
+            
+            <div class="py-2 border-2 p-2 bg-blue-500 hover:bg-blue-600">
+                <a href="/login"><h5 class="text-lg text-center font-medium text-white">Login</h5></a>
+            </div>
+            <div class="py-2 border-2 p-2 bg-blue-500 hover:bg-blue-600">
+                <a href="/signup"><h5 class="text-lg text-center font-medium text-white">Don't have an account? Sign-up</h5></a>
+            </div>
+
         </div>
     </div>
-    <!--<%- include('footer.ejs') %>-->
+    <h3 class="text-xl font-bold  text-center py-8">Built with Node.js</h3>
 </body>
 </html>

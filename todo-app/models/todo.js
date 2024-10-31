@@ -1,7 +1,7 @@
-/* eslint-disable no-unused-vars */
 'use strict';
 const {
-  Model
+  Model,
+  Op
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Todo extends Model {
@@ -12,10 +12,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Todo.belongsTo(models.User, {
+        foreignKey: 'userId'
+      })
     }
 
-    static addTodo({title, dueDate}) {
-      return this.create({title: title, dueDate: dueDate, completed: false});
+    static addTodo({title, dueDate, userId}) {
+      return this.create({title: title, dueDate: dueDate, completed: false, userId});
     }
 
     setCompletionStatus( status ) {
@@ -30,36 +33,70 @@ module.exports = (sequelize, DataTypes) => {
       return this.findAll();
     }
 
-    isOverdue() {
-      return (this.dueDate < new Date().toISOString().split('T',1)[0] && 
-        this.completed === false);
+    static async isOverdue(userId) {
+      return this.findAll({
+        where: {
+          dueDate: {
+            [Op.lt]: new Date().toISOString().split('T',1)[0],
+          },
+          userId: userId,
+          completed: false
+        },
+      });
     }
 
-    isDueToday() {
-      return (this.dueDate == new Date().toISOString().split('T',1)[0] &&
-        this.completed === false);
+    static async isDueToday(userId) {
+      return this.findAll({
+        where: {
+          dueDate: {
+            [Op.eq]: new Date().toISOString().split('T',1)[0],
+          },
+          userId,
+          completed: false
+        },
+      });
     }
 
-    isDueLater() {
-      return (this.dueDate > new Date().toISOString().split('T',1)[0] &&
-        this.completed === false);
+    static async isDueLater(userId) {
+      return this.findAll({
+        where: {
+          dueDate: {
+            [Op.gt]: new Date().toISOString().split('T',1)[0],
+          },
+          userId,
+          completed: false
+        }  
+      });
     }
 
-    isCompleted() {
-      return this.completed === true;
+    static async isCompleted(userId) {
+      return this.findAll({
+        where: {
+          userId,
+          completed: true
+        },
+      });
     }
 
-    static async remove(id) {
+    static async remove(id, userId) {
       return this.destroy({
         where: {
           id,
+          userId
         },
       });
     }
 
   }
   Todo.init({
-    title: DataTypes.STRING,
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        notNull: true
+      }
+    },
     dueDate: DataTypes.DATEONLY,
     completed: DataTypes.BOOLEAN
   }, {

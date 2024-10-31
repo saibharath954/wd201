@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="csrf-token" content="<%= csrfToken %>">
+        <link href="./css/style.css" rel="stylesheet">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <title><%= title %></title>
+    </head>
+    <body>
+      <div class="p-4 flex justify-between">
+        <a href="/" class="text-blue-600 text-xl font-semibold border-b-2">Home</a>
+      </div>
+        <div class="relative flex min-h-screen flex-col justify-center"> 
+            <div class=" bg-purple-600 mx-auto px-5 py-5 rounded-lg"> 
+              <h1 class="text-3xl text-center text-yellow-200 font-bold leading-tight">
+                Create Account<br><br>
+              </h1>
+              <div class="flex-col justify-center bg-white mx-auto rounded-lg px-3 py-3">
+                <form id="form" class="space-y-5" action="/users" method="post">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <label for="firstName" class="inline-block w-40 font-medium leading-5 text-gray-800">
+                    First Name
+                  </label>
+                  <input required type="text" id="FirstName" name="firstName"
+                    class=" bg-gray-200 inline-block rounded-lg shadow-md px-4 py-2"> 
+                  <br>
+
+                  <label for="lastName" class="inline-block w-40 font-medium leading-5 text-gray-800">
+                    Last Name
+                  </label>
+                  <input required type="text" id="lastName" name="lastName"
+                    class=" bg-gray-200 inline-block rounded-lg shadow-md px-4 py-2"> 
+                  <br>
+                  
+                  <label for="email" class="inline-block w-40 font-medium leading-5 text-gray-800">
+                    Email
+                  </label>
+                  <input required type="email" id="email" name="email"
+                    class="bg-gray-200 inline-block rounded-lg shadow-md px-4 py-2"> 
+                  <br>
+      
+                  <label for="password" class="inline-block w-40 font-medium leading-5 text-gray-800">
+                    Password
+                  </label>
+                  <input required type="password" id="password" name="password"
+                    class="bg-gray-200 inline-block rounded-lg shadow-md px-4 py-2">
+                  <br>
+      
+                  <div class="flex items-center justify-center">
+                    <button type="submit" id="submit"
+                    class="mx-auto bg-green-500 hover:bg-green-600 text-white rounded-lg shadow-md px-4 py-2 w-40">
+                    Sign up
+                    </button>
+                  </div>
+
+                  <div class="px-2">
+                    <a href="/login"><h5 class="text-lg text-center font-medium">Have an account? <span class="text-blue-600">Login</span></h5></a>
+                  </div>
+      
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
